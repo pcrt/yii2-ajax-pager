@@ -1,5 +1,5 @@
 {
-	"name": "pcrt/yii2-select2",
+	"name": "pcrt/yii2-ajax-pager",
 	"type": "library",
 	"description": "Yii2-select2 widget implementation",
 	"keywords": ["yii2", "theme", "helper", "assets", "select2"],
