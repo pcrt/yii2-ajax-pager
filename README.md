@@ -63,7 +63,7 @@ $this->renderPartial('ajax/list', [ 'dt' => $dataProvider ]);
 <?php Paginator::end() ?>
 ```
 
-You can also pass an alternative "wapper view" file :
+You can also pass an alternative "wrapper view" file :
 
 ```php
 use pcrt/Paginator;
@@ -105,7 +105,7 @@ class MyController extends Controller {
 
 ## License
 
-Yii2-Latex is released under the BSD-3 License. See the bundled `LICENSE.md` for details.
+Yii2-Ajax-Pager is released under the BSD-3 License. See the bundled `LICENSE.md` for details.
 
 
 # Useful URLs
