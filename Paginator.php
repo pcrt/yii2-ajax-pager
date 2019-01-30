@@ -16,17 +16,29 @@ class Paginator extends ContentDecorator
      */
     public $viewFile = __DIR__ . '/_wrapper.php';
     /**
-     * @var string the Type of paginator (InfiniteScroll, Paginator).
+     * @var string the Type of paginator (InfiniteScroll, Pagination).
      */
-    public $type = 'Paginator';
+    public $type = 'Pagination';
+    /**
+     * @var string the ID of paginator wrapper HTML element .
+     */
+    public $id = 'pcrt-paginator-wrapper';
     /**
      * @var array Options for the paginator component .
      */
-    public $paginationOpt = []; 
+    public $paginationOpt = [];
+    /**
+     * @var array Events for the paginator component .
+     */
+    public $paginationEvents = [];
     /**
      * @var array Options for the infiniteScroll component .
      */
-    public $infiniteScrollOpt = []; 
+    public $infiniteScrollOpt = [];
+    /**
+     * @var array Events for the infiniteScroll component .
+     */
+    public $infiniteScrollEvents = [];
     /**
      * @var array the parameters (name => value) to be extracted and made available in the decorative view.
      */
@@ -41,38 +53,11 @@ class Paginator extends ContentDecorator
     }
 
     /**
-     * Select2 plugin placeholder check and initialization
-     */
-    protected function initPlaceholder()
-    {
-        $multipleSelection = ArrayHelper::getValue($this->options, 'multiple');
-
-        if (!empty($this->options['prompt']) && empty($this->clientOptions['placeholder'])) {
-            $this->clientOptions['placeholder'] = $multipleSelection
-                ? ArrayHelper::remove($this->options, 'prompt')
-                : $this->options['prompt'];
-
-            return null;
-        } elseif (!empty($this->options['placeholder'])) {
-            $this->clientOptions['placeholder'] = ArrayHelper::remove($this->options, 'placeholder');
-        }
-        if (!empty($this->clientOptions['placeholder']) && !$multipleSelection) {
-            $this->options['prompt'] = is_string($this->clientOptions['placeholder'])
-                ? $this->clientOptions['placeholder']
-                : ArrayHelper::getValue((array)$this->clientOptions['placeholder'], 'placeholder', '');
-        }
-    }
-
-    /**
      * @inheritdoc
      */
     public function run()
     {
-        if ($this->hasModel()) {
-            echo Html::activeDropDownList($this->model, $this->attribute, $this->items, $this->options);
-        } else {
-            echo Html::dropDownList($this->name, $this->value, $this->items, $this->options);
-        }
+        parent::run();
         $this->registerClientScript();
     }
 
@@ -83,21 +68,41 @@ class Paginator extends ContentDecorator
     {
         $view = $this->view;
 
+        // Registering Assets
         $this->registerBundle($view);
 
-        $options = !empty($this->clientOptions)
-            ? Json::encode($this->clientOptions)
-            : '';
-
-        $id = $this->options['id'];
-
-        $js[] = ";jQuery('#$id').select2($options);";
-        if (!empty($this->clientEvents)) {
-            foreach ($this->clientEvents as $event => $handler) {
-                $js[] = "jQuery('#$id').on('$event', $handler);";
+        $options = []
+        if($this->type === "InfiniteScroll"){
+          // Encode Option to JSON
+          $options = !empty($this->infiniteScrollOpt)
+              ? Json::encode($this->infiniteScrollOpt)
+              : '';
+          $id = $this->id;
+          // Init pagination Object and bind to Window
+          $js[] = "window.paginator = $('#$id');";
+          $js[] = "window.paginator.infiniteScroll(($options);";
+          // Add pagination Event hook
+          if (!empty($this->infiniteScrollEvents)) {
+            foreach ($this->infiniteScrollEvents as $event => $handler) {
+                $js[] = "window.paginator.on('$event', $handler);";
             }
+          }
+        }else{
+          // Encode Option to JSON
+          $options = !empty($this->paginationOpt)
+              ? Json::encode($this->paginationOpt)
+              : '';
+          // Init pagination Object and bind to Window
+          $js[] = "window.paginator = $('#$id');";
+          $js[] = "window.paginator.pagination($options);";
+          // Add pagination Event hook
+          if (!empty($this->paginationEvents)) {
+            foreach ($this->paginationEvents as $event => $handler) {
+                $js[] = "window.paginator.addHook('$event', $handler);";
+            }
+          }
         }
-
+        // Registering JS script on page
         $view->registerJs(implode("\n", $js));
     }
 
@@ -108,6 +113,11 @@ class Paginator extends ContentDecorator
      */
     protected function registerBundle(View $view)
     {
-        PaginatorAsset::register($view);
+        if($this->type === "InfiniteScroll"){
+          InfiniteAsset::register($view);
+        }else{
+          PaginatorAsset::register($view);
+        }
+
     }
 }

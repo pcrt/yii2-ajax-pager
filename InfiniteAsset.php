@@ -4,17 +4,16 @@ namespace pcrt;
 
 use yii\web\AssetBundle;
 
-class PaginationAsset extends AssetBundle
+class PaginatorAsset extends AssetBundle
 {
-    // http://pagination.js.org/
+    // https://infinite-scroll.com/
     public $sourcePath = __DIR__ . '/assets';
 
     public $js = [
-        'pagination/pagination.js'
+        'infinite/infinite-scroll.pkgd.min.js'
     ];
 
     public $css = [
-        'pagination/pagination.css'
     ];
 
     public $depends = [
