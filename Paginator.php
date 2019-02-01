@@ -7,6 +7,7 @@ use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\View;
 use yii\widgets\ContentDecorator;
+use yii\web\JsExpression;
 
 class Paginator extends ContentDecorator
 {
@@ -22,11 +23,20 @@ class Paginator extends ContentDecorator
     /**
      * @var string the ID of paginator wrapper HTML element .
      */
-    public $id = 'pcrt-paginator-wrapper';
+    public $id = 'pcrt-pagination';
     /**
      * @var array Options for the paginator component .
      */
+
     public $paginationOpt = [];
+    /**
+     * @var string Ajax get data url .
+     */
+    public $url = [];
+    /**
+     * @var integer item per page params  .
+     */
+    public $pageSize = 30;
     /**
      * @var array Events for the paginator component .
      */
@@ -57,6 +67,7 @@ class Paginator extends ContentDecorator
      */
     public function run()
     {
+        $this->params['type'] = $this->type;
         parent::run();
         $this->registerClientScript();
     }
@@ -67,43 +78,74 @@ class Paginator extends ContentDecorator
     public function registerClientScript()
     {
         $view = $this->view;
-
+        $script = "";
         // Registering Assets
         $this->registerBundle($view);
 
-        $options = []
+        $options = [];
         if($this->type === "InfiniteScroll"){
-          // Encode Option to JSON
-          $options = !empty($this->infiniteScrollOpt)
-              ? Json::encode($this->infiniteScrollOpt)
-              : '';
-          $id = $this->id;
-          // Init pagination Object and bind to Window
-          $js[] = "window.paginator = $('#$id');";
-          $js[] = "window.paginator.infiniteScroll(($options);";
-          // Add pagination Event hook
-          if (!empty($this->infiniteScrollEvents)) {
-            foreach ($this->infiniteScrollEvents as $event => $handler) {
-                $js[] = "window.paginator.on('$event', $handler);";
+
+          $script = new JsExpression("
+            window.reload_table = function(){
+              if(window.infScroll !== undefined){
+                  window.infScroll.destroy();
+              }
+              $('.pcrt-paginator-wrapper').html('');
+              var elem = document.getElementById('pcrt-paginator-wrapper');
+              window.infScroll = new InfiniteScroll( elem, {
+                path: function() {
+                    let page = this.pageIndex;
+                    return '".$this->url."&pageNumber='+page+'&pageSize=".$this->pageSize."' ;
+                },
+                append: '.pcrt-card',
+                history: false,
+              });
+              window.infScroll.loadNextPage();
             }
-          }
+
+            $('document').ready(function(){
+              window.reload_table();
+            });");
+
         }else{
-          // Encode Option to JSON
-          $options = !empty($this->paginationOpt)
-              ? Json::encode($this->paginationOpt)
-              : '';
-          // Init pagination Object and bind to Window
-          $js[] = "window.paginator = $('#$id');";
-          $js[] = "window.paginator.pagination($options);";
-          // Add pagination Event hook
-          if (!empty($this->paginationEvents)) {
-            foreach ($this->paginationEvents as $event => $handler) {
-                $js[] = "window.paginator.addHook('$event', $handler);";
+
+          $id = $this->id;
+
+          $script = new JsExpression("
+            function ajaxGetPage(_pageSize,_pageNum){
+              var xhttp = new XMLHttpRequest();
+              xhttp.open('GET', '".$this->url."&pageSize='+_pageSize+'&pageNumber='+_pageNum+'&_csrf='+yii.getCsrfToken(), true);
+              xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+              xhttp.onreadystatechange = function() {
+                if(xhttp.readyState == 4 && xhttp.status == 200) {
+                      var result = JSON.parse(xhttp.responseText);
+                      $('#".$id."').pagination('updateItems', result.total);
+                      $('#pcrt-paginator-wrapper').html(result.html);
+                  }
+              }
+              xhttp.send();
             }
-          }
+
+            window.reload_table = function(){
+              $('#".$id."').pagination('destroy');
+
+              $('#".$id."').pagination({
+                'onInit': function(){
+                  ajaxGetPage(".$this->pageSize.",1)
+                },
+                'onPageClick': function(pageNumber, event){
+                  ajaxGetPage(".$this->pageSize.",pageNumber)
+                },
+                'itemsOnPage': $this->pageSize
+              });
+            }
+            $('document').ready(function(){
+              window.reload_table();
+            });");
+
         }
         // Registering JS script on page
-        $view->registerJs(implode("\n", $js));
+        $view->registerJs($script);
     }
 
     /**

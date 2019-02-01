@@ -4,17 +4,17 @@ namespace pcrt;
 
 use yii\web\AssetBundle;
 
-class PaginationAsset extends AssetBundle
+class PaginatorAsset extends AssetBundle
 {
     // http://pagination.js.org/
     public $sourcePath = __DIR__ . '/assets';
 
     public $js = [
-        'pagination/pagination.js'
+        'pagination/simplePagination.js'
     ];
 
     public $css = [
-        'pagination/pagination.css'
+        'pagination/simplePagination.css'
     ];
 
     public $depends = [

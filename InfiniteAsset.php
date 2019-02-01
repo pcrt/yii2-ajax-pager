@@ -4,7 +4,7 @@ namespace pcrt;
 
 use yii\web\AssetBundle;
 
-class PaginatorAsset extends AssetBundle
+class InfiniteAsset extends AssetBundle
 {
     // https://infinite-scroll.com/
     public $sourcePath = __DIR__ . '/assets';
