@@ -21,14 +21,19 @@ class Paginator extends ContentDecorator
      */
     public $type = 'Pagination';
     /**
-     * @var string the ID of paginator wrapper HTML element .
+     * @var string the ID of paginator element - Only for Paginator widget.
      */
     public $id = 'pcrt-pagination';
     /**
-     * @var array Options for the paginator component .
+     * @var string the ID of paginator wrapper element.
      */
+    public $id_wrapper = 'pcrt-pagination-wrapper';
+    /**
+     * @var string the Selector for append element .
+     */
+    public $append = '.pcrt-card';
 
-    public $paginationOpt = [];
+
     /**
      * @var string Ajax get data url .
      */
@@ -37,18 +42,7 @@ class Paginator extends ContentDecorator
      * @var integer item per page params  .
      */
     public $pageSize = 30;
-    /**
-     * @var array Events for the paginator component .
-     */
-    public $paginationEvents = [];
-    /**
-     * @var array Options for the infiniteScroll component .
-     */
-    public $infiniteScrollOpt = [];
-    /**
-     * @var array Events for the infiniteScroll component .
-     */
-    public $infiniteScrollEvents = [];
+
     /**
      * @var array the parameters (name => value) to be extracted and made available in the decorative view.
      */
@@ -90,14 +84,14 @@ class Paginator extends ContentDecorator
               if(window.infScroll !== undefined){
                   window.infScroll.destroy();
               }
-              $('.pcrt-paginator-wrapper').html('');
-              var elem = document.getElementById('pcrt-paginator-wrapper');
+              var elem = document.getElementById('".$this->id_wrapper."');
+              elem.innerHTML = "";
               window.infScroll = new InfiniteScroll( elem, {
                 path: function() {
                     let page = this.pageIndex;
                     return '".$this->url."&pageNumber='+page+'&pageSize=".$this->pageSize."' ;
                 },
-                append: '.pcrt-card',
+                append: '".$append."',
                 history: false,
               });
               window.infScroll.loadNextPage();
