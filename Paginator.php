@@ -27,12 +27,11 @@ class Paginator extends ContentDecorator
     /**
      * @var string the ID of paginator wrapper element.
      */
-    public $id_wrapper = 'pcrt-pagination-wrapper';
+    public $id_wrapper = 'pcrt-paginator-wrapper';
     /**
      * @var string the Selector for append element .
      */
     public $append = '.pcrt-card';
-
 
     /**
      * @var string Ajax get data url .
@@ -85,11 +84,11 @@ class Paginator extends ContentDecorator
                   window.infScroll.destroy();
               }
               var elem = document.getElementById('".$this->id_wrapper."');
-              elem.innerHTML = "";
+              elem.innerHTML = '';
               window.infScroll = new InfiniteScroll( elem, {
                 path: function() {
                     let page = this.pageIndex;
-                    return '".$this->url."&pageNumber='+page+'&pageSize=".$this->pageSize."' ;
+                    return '".$this->url."&pageNumber='+page+'&pageSize=".$this->pageSize."';
                 },
                 append: '".$append."',
                 history: false,
@@ -114,7 +113,8 @@ class Paginator extends ContentDecorator
                 if(xhttp.readyState == 4 && xhttp.status == 200) {
                       var result = JSON.parse(xhttp.responseText);
                       $('#".$id."').pagination('updateItems', result.total);
-                      $('#pcrt-paginator-wrapper').html(result.html);
+                      var elem = document.getElementById('".$this->id_wrapper."');
+                      elem.innerHTML = result.html;
                   }
               }
               xhttp.send();
