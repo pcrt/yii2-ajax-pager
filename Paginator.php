@@ -60,6 +60,10 @@ class Paginator extends ContentDecorator
     public $pageSize = 30;
 
     /**
+     * @var array the parameters (name => value) to be extracted and made available in the decorative view.
+     */
+    public $params = [];
+    /**
      * @inheritdoc
      */
     public function init()
@@ -91,6 +95,7 @@ class Paginator extends ContentDecorator
      */
     public function run()
     {
+        $this->params['type'] = $this->type;
         parent::run();
         $this->registerClientScript();
     }
@@ -141,7 +146,7 @@ class Paginator extends ContentDecorator
           xhttp.onreadystatechange = function() {
             if(xhttp.readyState == 4 && xhttp.status == 200) {
                   var result = JSON.parse(xhttp.responseText);
-                  $('#".$id."').pagination('updateItems', result.total);
+                  $('#".$this->id."').pagination('updateItems', result.total);
                   var elem = document.getElementById('".$this->id_wrapper."');
                   elem.innerHTML = result.html;
               }
