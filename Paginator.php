@@ -106,6 +106,7 @@ class Paginator extends ContentDecorator
     */
     private function renderInfiniteScroll(){
 
+
       $script = new JsExpression("
         window.reload_table = function(){
           if(window.infScroll !== undefined){
@@ -123,6 +124,12 @@ class Paginator extends ContentDecorator
           });
           window.infScroll.loadNextPage();
         }
+
+        // Add event emit on Nextpage loaded .
+        window.infScroll.on( 'append', function( response, path, items ) {
+          var event = new Event('table_loaded');
+          window.dispatchEvent(event);
+        });
 
         $('document').ready(function(){
           window.reload_table();
@@ -149,6 +156,10 @@ class Paginator extends ContentDecorator
                   $('#".$this->id."').pagination('updateItems', result.total);
                   var elem = document.getElementById('".$this->id_wrapper."');
                   elem.innerHTML = result.html;
+
+                  // Add event emit on Nextpage loaded .
+                  var event = new Event('table_loaded');
+                  window.dispatchEvent(event);
               }
           }
           xhttp.send();
