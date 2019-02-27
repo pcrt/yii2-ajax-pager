@@ -107,7 +107,7 @@ class Paginator extends ContentDecorator
     */
     private function renderInfiniteScroll(){
 
-      $url = Url::to([$this->url, 'pageNumber' => '\'+page+\'', 'pageSize' => $this->pageSize]);
+      $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
 
       $script = new JsExpression("
         window.reload_table = function(){
@@ -119,7 +119,7 @@ class Paginator extends ContentDecorator
           window.infScroll = new InfiniteScroll( elem, {
             path: function() {
                 let page = this.pageIndex;
-                return '".$url."';
+                return '".$url."&pageNumber='+page;
             },
             append: '".$this->append."',
             history: false,
@@ -147,12 +147,12 @@ class Paginator extends ContentDecorator
     */
     private function renderPagination(){
 
-      $url = Url::to([$this->url, 'pageNumber' => '\'+page+\'', 'pageSize' => $this->pageSize]);
+      $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
 
       $script = new JsExpression("
         function ajaxGetPage(_pageSize,_pageNum){
           var xhttp = new XMLHttpRequest();
-          xhttp.open('GET', '".$url."'", true);
+          xhttp.open('GET', '".$url."&pageNumber='+_pageNum, true);
           xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           xhttp.onreadystatechange = function() {
             if(xhttp.readyState == 4 && xhttp.status == 200) {
