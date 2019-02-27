@@ -15,6 +15,7 @@ use yii\web\View;
 use yii\widgets\ContentDecorator;
 use yii\web\JsExpression;
 use yii\base\InvalidParamException;
+use yii\helpers\Url;
 
 /**
  * Yii2 implementation of ContentDecorator pattern to insert a wrapper ajax data loader working in two mode :
@@ -106,6 +107,7 @@ class Paginator extends ContentDecorator
     */
     private function renderInfiniteScroll(){
 
+      $url = Url::to([$this->url, 'pageNumber' => '\'+page+\'', 'pageSize' => $this->pageSize]);
 
       $script = new JsExpression("
         window.reload_table = function(){
@@ -117,7 +119,7 @@ class Paginator extends ContentDecorator
           window.infScroll = new InfiniteScroll( elem, {
             path: function() {
                 let page = this.pageIndex;
-                return '".$this->url."&pageNumber='+page+'&pageSize=".$this->pageSize."';
+                return '".$url."';
             },
             append: '".$this->append."',
             history: false,
@@ -145,10 +147,12 @@ class Paginator extends ContentDecorator
     */
     private function renderPagination(){
 
+      $url = Url::to([$this->url, 'pageNumber' => '\'+page+\'', 'pageSize' => $this->pageSize]);
+
       $script = new JsExpression("
         function ajaxGetPage(_pageSize,_pageNum){
           var xhttp = new XMLHttpRequest();
-          xhttp.open('GET', '".$this->url."&pageSize='+_pageSize+'&pageNumber='+_pageNum+'&_csrf='+yii.getCsrfToken(), true);
+          xhttp.open('GET', '".$url."'", true);
           xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           xhttp.onreadystatechange = function() {
             if(xhttp.readyState == 4 && xhttp.status == 200) {
