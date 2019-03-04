@@ -148,6 +148,12 @@ class Paginator extends ContentDecorator
     private function renderPagination(){
 
       $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
+        
+      $params = $this->params;
+
+      foreach ($params as $key => $param) {
+        $url .= '&' . $key . '=' . $param;
+      }
 
       $script = new JsExpression("
         function ajaxGetPage(_pageSize,_pageNum){
