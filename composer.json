@@ -4,7 +4,7 @@
 	"description": "Yii2-select2 widget implementation",
 	"keywords": ["yii2", "theme", "helper", "assets", "select2"],
 	"license": "BSD-3-Clause",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"authors": [
 		{
 			"name": "Marco Petrini",
