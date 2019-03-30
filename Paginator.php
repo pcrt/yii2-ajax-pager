@@ -124,14 +124,15 @@ class Paginator extends ContentDecorator
             append: '".$this->append."',
             history: false,
           });
+
+          // Add event emit on Nextpage loaded .
+          window.infScroll.on( 'append', function( response, path, items ) {
+            var event = new Event('table_loaded');
+            window.dispatchEvent(event);
+          });
+
           window.infScroll.loadNextPage();
         }
-
-        // Add event emit on Nextpage loaded .
-        window.infScroll.on( 'append', function( response, path, items ) {
-          var event = new Event('table_loaded');
-          window.dispatchEvent(event);
-        });
 
         $('document').ready(function(){
           window.reload_table();
@@ -148,12 +149,6 @@ class Paginator extends ContentDecorator
     private function renderPagination(){
 
       $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
-        
-      $params = $this->params;
-
-      foreach ($params as $key => $param) {
-        $url .= '&' . $key . '=' . $param;
-      }
 
       $script = new JsExpression("
         function ajaxGetPage(_pageSize,_pageNum){
