@@ -26,7 +26,6 @@ use yii\helpers\Url;
 
 class Paginator extends ContentDecorator
 {
-
     const INFINITE = "InfiniteScroll";
     const PAGINATION = "Pagination";
 
@@ -64,29 +63,34 @@ class Paginator extends ContentDecorator
      * @var array the parameters (name => value) to be extracted and made available in the decorative view.
      */
     public $params = [];
+    
+    public $nextText = 'Next';
+    
+    public $prevText = 'Prev';
+        
     /**
      * @inheritdoc
      */
     public function init()
     {
-        if($this->type !== self::INFINITE && $this->type !== self::PAGINATION){
-          throw new InvalidParamException("The type parameter must contain a valid value .");
+        if ($this->type !== self::INFINITE && $this->type !== self::PAGINATION) {
+            throw new InvalidParamException("The type parameter must contain a valid value .");
         }
-        if($this->url === ""){
-          throw new InvalidParamException("The url parameter is mandatory and must contain a valid value .");
+        if ($this->url === "") {
+            throw new InvalidParamException("The url parameter is mandatory and must contain a valid value .");
         }
-        if($this->id_wrapper === ""){
-          throw new InvalidParamException("The id_wrapper parameter is mandatory and must contain a valid value .");
+        if ($this->id_wrapper === "") {
+            throw new InvalidParamException("The id_wrapper parameter is mandatory and must contain a valid value .");
         }
-        if($this->type === self::INFINITE){
-          if($this->append === ""){
-            throw new InvalidParamException("The append parameter is mandatory and must contain a valid value .");
-          }
+        if ($this->type === self::INFINITE) {
+            if ($this->append === "") {
+                throw new InvalidParamException("The append parameter is mandatory and must contain a valid value .");
+            }
         }
-        if($this->type === self::PAGINATION){
-          if($this->id === ""){
-            throw new InvalidParamException("The id parameter is mandatory and must contain a valid value .");
-          }
+        if ($this->type === self::PAGINATION) {
+            if ($this->id === "") {
+                throw new InvalidParamException("The id parameter is mandatory and must contain a valid value .");
+            }
         }
         parent::init();
     }
@@ -105,11 +109,11 @@ class Paginator extends ContentDecorator
     * Return JsExpression implementation of InfiniteScroll js function
     * @return JsExpression
     */
-    private function renderInfiniteScroll(){
+    private function renderInfiniteScroll()
+    {
+        $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
 
-      $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
-
-      $script = new JsExpression("
+        $script = new JsExpression("
         window.reload_table = function(){
           if(window.infScroll !== undefined){
               window.infScroll.destroy();
@@ -137,25 +141,24 @@ class Paginator extends ContentDecorator
           window.reload_table();
         });");
 
-      return $script;
-
+        return $script;
     }
 
     /**
     * Return JsExpression implementation of Pagination js function
     * @return JsExpression
     */
-    private function renderPagination(){
-
-      $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
+    private function renderPagination()
+    {
+        $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
         
-      $params = $this->params;
+        $params = $this->params;
 
-      foreach ($params as $key => $param) {
-        $url .= '&' . $key . '=' . $param;
-      }
+        foreach ($params as $key => $param) {
+            $url .= '&' . $key . '=' . $param;
+        }
 
-      $script = new JsExpression("
+        $script = new JsExpression("
         function ajaxGetPage(_pageSize,_pageNum){
           var xhttp = new XMLHttpRequest();
           xhttp.open('GET', '".$url."&pageNumber='+_pageNum, true);
@@ -185,7 +188,9 @@ class Paginator extends ContentDecorator
             'onPageClick': function(pageNumber, event){
               ajaxGetPage(".$this->pageSize.",pageNumber)
             },
-            'itemsOnPage': $this->pageSize
+            'itemsOnPage': $this->pageSize,
+            'prevText': $this->prevText,
+            'nextText': $this->nextText
           });
         }
         $('document').ready(function(){
@@ -206,11 +211,11 @@ class Paginator extends ContentDecorator
         $this->registerBundle($view);
 
         $options = [];
-        if($this->type === self::INFINITE){
-          $script = $this->renderInfiniteScroll();
+        if ($this->type === self::INFINITE) {
+            $script = $this->renderInfiniteScroll();
         }
-        if($this->type === self::PAGINATION){
-          $script = $this->renderPagination();
+        if ($this->type === self::PAGINATION) {
+            $script = $this->renderPagination();
         }
         // Registering JS script on page
         $view->registerJs($script);
@@ -223,11 +228,10 @@ class Paginator extends ContentDecorator
      */
     protected function registerBundle(View $view)
     {
-        if($this->type === "InfiniteScroll"){
-          InfiniteAsset::register($view);
-        }else{
-          PaginatorAsset::register($view);
+        if ($this->type === "InfiniteScroll") {
+            InfiniteAsset::register($view);
+        } else {
+            PaginatorAsset::register($view);
         }
-
     }
 }
