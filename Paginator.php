@@ -184,8 +184,8 @@ class Paginator extends ContentDecorator
               ajaxGetPage(".$this->pageSize.",pageNumber)
             },
             'itemsOnPage': $this->pageSize,
-            'prevText': $this->prevText,
-            'nextText': $this->nextText
+            'prevText': '$this->prevText',
+            'nextText': '$this->nextText'
           });
         }
         $('document').ready(function(){
