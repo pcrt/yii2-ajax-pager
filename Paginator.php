@@ -111,7 +111,12 @@ class Paginator extends ContentDecorator
     */
     private function renderInfiniteScroll()
     {
-        $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
+        if ($this->params)
+          $params = $this->params;
+
+        $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
+      
+        $url = Url::to($urlArray);
 
         $script = new JsExpression("
         window.reload_table = function(){
@@ -151,7 +156,12 @@ class Paginator extends ContentDecorator
     */
     private function renderPagination()
     {
-        $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
+        if ($this->params)
+          $params = $this->params;
+
+        $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
+      
+        $url = Url::to($urlArray);
 
         $script = new JsExpression("
         function ajaxGetPage(_pageSize,_pageNum){
