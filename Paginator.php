@@ -118,14 +118,10 @@ class Paginator extends ContentDecorator
       
         $url = Url::to($urlArray);
         
-        $getName = 'ajaxGetPage' . rand(0, 999999);
-        $reloadName = 'reload_table' . rand(0, 999999);
-
         $infName = 'infScroll' . rand(0, 999999);
-        $reloadName = 'reload_table' . rand(0, 999999);
 
         $script = new JsExpression("
-        window.".$reloadName." = function(){
+        window.reload_table = function(){
           if(window.".$infName." !== undefined){
               window.".$infName.".destroy();
           }
@@ -150,7 +146,7 @@ class Paginator extends ContentDecorator
         }
 
         $('document').ready(function(){
-          window.".$reloadName."();
+          window.reload_table();
         });");
 
         return $script;
@@ -170,7 +166,7 @@ class Paginator extends ContentDecorator
         $url = Url::to($urlArray);
 
         $getName = 'ajaxGetPage' . rand(0, 999999);
-        $reloadName = 'reload_table' . rand(0, 999999);
+        $refreshName = 'refresh' . rand(0, 999999);
 
         $script = new JsExpression("
         function ".$getName."(_pageSize,_pageNum){
@@ -192,7 +188,7 @@ class Paginator extends ContentDecorator
           xhttp.send();
         }
 
-        window.".$reloadName." = function(){
+        function ".$refreshName."() {
           $('#".$this->id."').pagination('destroy');
 
           $('#".$this->id."').pagination({
@@ -207,8 +203,12 @@ class Paginator extends ContentDecorator
             'nextText': '$this->nextText'
           });
         }
+
+        window.reload_table = function(){
+          ".$refreshName."()
+        }
         $('document').ready(function(){
-          window.".$reloadName."();
+          ".$refreshName."()
         });");
 
         return $script;
