@@ -117,15 +117,21 @@ class Paginator extends ContentDecorator
         $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
       
         $url = Url::to($urlArray);
+        
+        $getName = 'ajaxGetPage' . rand(0, 999999);
+        $reloadName = 'reload_table' . rand(0, 999999);
+
+        $infName = 'infScroll' . rand(0, 999999);
+        $reloadName = 'reload_table' . rand(0, 999999);
 
         $script = new JsExpression("
-        window.reload_table = function(){
-          if(window.infScroll !== undefined){
-              window.infScroll.destroy();
+        window.".$reloadName." = function(){
+          if(window.".$infName." !== undefined){
+              window.".$infName.".destroy();
           }
           var elem = document.getElementById('".$this->id_wrapper."');
           elem.innerHTML = '';
-          window.infScroll = new InfiniteScroll( elem, {
+          window.".$infName." = new InfiniteScroll( elem, {
             path: function() {
                 let page = this.pageIndex;
                 return '".$url."&pageNumber='+page;
@@ -135,16 +141,16 @@ class Paginator extends ContentDecorator
           });
 
           // Add event emit on Nextpage loaded .
-          window.infScroll.on( 'append', function( response, path, items ) {
+          window.".$infName.".on( 'append', function( response, path, items ) {
             var event = new Event('table_loaded');
             window.dispatchEvent(event);
           });
 
-          window.infScroll.loadNextPage();
+          window.".$infName.".loadNextPage();
         }
 
         $('document').ready(function(){
-          window.reload_table();
+          window.".$reloadName."();
         });");
 
         return $script;
@@ -163,8 +169,11 @@ class Paginator extends ContentDecorator
       
         $url = Url::to($urlArray);
 
+        $getName = 'ajaxGetPage' . rand(0, 999999);
+        $reloadName = 'reload_table' . rand(0, 999999);
+
         $script = new JsExpression("
-        function ajaxGetPage(_pageSize,_pageNum){
+        function ".$getName."(_pageSize,_pageNum){
           var xhttp = new XMLHttpRequest();
           xhttp.open('GET', '".$url."&pageNumber='+_pageNum, true);
           xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -183,15 +192,15 @@ class Paginator extends ContentDecorator
           xhttp.send();
         }
 
-        window.reload_table = function(){
+        window.".$reloadName." = function(){
           $('#".$this->id."').pagination('destroy');
 
           $('#".$this->id."').pagination({
             'onInit': function(){
-              ajaxGetPage(".$this->pageSize.",1)
+              ".$getName."(".$this->pageSize.",1)
             },
             'onPageClick': function(pageNumber, event){
-              ajaxGetPage(".$this->pageSize.",pageNumber)
+              ".$getName."(".$this->pageSize.",pageNumber)
             },
             'itemsOnPage': $this->pageSize,
             'prevText': '$this->prevText',
@@ -199,7 +208,7 @@ class Paginator extends ContentDecorator
           });
         }
         $('document').ready(function(){
-          window.reload_table();
+          window.".$reloadName."();
         });");
 
         return $script;
