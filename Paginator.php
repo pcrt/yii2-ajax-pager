@@ -111,16 +111,23 @@ class Paginator extends ContentDecorator
     */
     private function renderInfiniteScroll()
     {
-        $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
+        if ($this->params)
+          $params = $this->params;
+
+        $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
+      
+        $url = Url::to($urlArray);
+        
+        $infName = 'infScroll' . rand(0, 999999);
 
         $script = new JsExpression("
         window.reload_table = function(){
-          if(window.infScroll !== undefined){
-              window.infScroll.destroy();
+          if(window.".$infName." !== undefined){
+              window.".$infName.".destroy();
           }
           var elem = document.getElementById('".$this->id_wrapper."');
           elem.innerHTML = '';
-          window.infScroll = new InfiniteScroll( elem, {
+          window.".$infName." = new InfiniteScroll( elem, {
             path: function() {
                 let page = this.pageIndex;
                 return '".$url."&pageNumber='+page;
@@ -130,12 +137,12 @@ class Paginator extends ContentDecorator
           });
 
           // Add event emit on Nextpage loaded .
-          window.infScroll.on( 'append', function( response, path, items ) {
+          window.".$infName.".on( 'append', function( response, path, items ) {
             var event = new Event('table_loaded');
             window.dispatchEvent(event);
           });
 
-          window.infScroll.loadNextPage();
+          window.".$infName.".loadNextPage();
         }
 
         $('document').ready(function(){
@@ -151,10 +158,18 @@ class Paginator extends ContentDecorator
     */
     private function renderPagination()
     {
-        $url = Url::to([$this->url, 'pageSize' => $this->pageSize]);
+        if ($this->params)
+          $params = $this->params;
+
+        $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
+      
+        $url = Url::to($urlArray);
+
+        $getName = 'ajaxGetPage' . rand(0, 999999);
+        $refreshName = 'refresh' . rand(0, 999999);
 
         $script = new JsExpression("
-        function ajaxGetPage(_pageSize,_pageNum){
+        function ".$getName."(_pageSize,_pageNum){
           var xhttp = new XMLHttpRequest();
           xhttp.open('GET', '".$url."&pageNumber='+_pageNum, true);
           xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -173,23 +188,27 @@ class Paginator extends ContentDecorator
           xhttp.send();
         }
 
-        window.reload_table = function(){
+        function ".$refreshName."() {
           $('#".$this->id."').pagination('destroy');
 
           $('#".$this->id."').pagination({
             'onInit': function(){
-              ajaxGetPage(".$this->pageSize.",1)
+              ".$getName."(".$this->pageSize.",1)
             },
             'onPageClick': function(pageNumber, event){
-              ajaxGetPage(".$this->pageSize.",pageNumber)
+              ".$getName."(".$this->pageSize.",pageNumber)
             },
             'itemsOnPage': $this->pageSize,
             'prevText': '$this->prevText',
             'nextText': '$this->nextText'
           });
         }
+
+        window.reload_table = function(){
+          ".$refreshName."()
+        }
         $('document').ready(function(){
-          window.reload_table();
+          ".$refreshName."()
         });");
 
         return $script;
