@@ -101,6 +101,8 @@ class Paginator extends ContentDecorator
     public function run()
     {
         $this->params['type'] = $this->type;
+        $this->params['id'] = $this->id;
+        $this->params['id_wrapper'] = $this->id_wrapper;
         parent::run();
         $this->registerClientScript();
     }
@@ -111,8 +113,9 @@ class Paginator extends ContentDecorator
     */
     private function renderInfiniteScroll()
     {
-        if ($this->params)
-          $params = $this->params;
+        if ($this->params) {
+            $params = $this->params;
+        }
 
         $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
       
@@ -158,8 +161,9 @@ class Paginator extends ContentDecorator
     */
     private function renderPagination()
     {
-        if ($this->params)
-          $params = $this->params;
+        if ($this->params) {
+            $params = $this->params;
+        }
 
         $urlArray = array_merge([$this->url, 'pageSize' => $this->pageSize], $params);
       

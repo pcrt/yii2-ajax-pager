@@ -1,6 +1,6 @@
-<div class="pcrt-paginator-wrapper" id="pcrt-paginator-wrapper" >
+<div class="<?=id_wrapper?>" id="<?=id_wrapper?>" >
   <?php echo $content; ?>
 </div>
-<?php if($type === "Pagination"): ?>
-  <div class="pcrt-pagination" id="pcrt-pagination"></div>
+<?php if ($type === "Pagination"): ?>
+  <div class="<?=$id?>" id="<?=$id?>"></div>
 <?php endif; ?>
