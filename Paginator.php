@@ -182,7 +182,7 @@ class Paginator extends ContentDecorator
           if ($this->placeholdersTemplate)
             $template = str_replace("\n","",addslashes($this->placeholdersTemplate));
           else
-            $template = addslashes('<div style="min-height: 400px; font-style: italic;padding-top: 50px; text-align: center; font-size: 2em;">' . $this->placeholdersLabel . '</div>');
+            $template = addslashes('<div style="font-style: italic;padding: 50px 0 50px; text-align: center; font-size: 2em;">' . $this->placeholdersLabel . '</div>');
 
           $ajaxFunc = "function ".$getName."(_pageSize,_pageNum){
             var elem = document.getElementById('".$this->id_wrapper."');
@@ -190,7 +190,7 @@ class Paginator extends ContentDecorator
             $(elem).parent().find('.pcrt-row-h').hide()
             $('#".$this->id."').attr('style','display:none !important');
 
-            elem.innerHTML = '<div style=\"text-align:center;min-height: 400px;padding-top: 50px;\"><img height=\"30\" width=\"30\" src=\"" . str_replace(["\n", " "],"","data:image/gif;
+            elem.innerHTML = '<div style=\"text-align:center;padding: 50px 0 50px;\"><img height=\"30\" width=\"30\" src=\"" . str_replace(["\n", " "],"","data:image/gif;
             base64,R0lGODlhHgAeAKUAAAQCBISGhMTGxERCROTm5GRmZKyurCQmJNTW1FRSVJyanPT29HR2dLy6vDQ2NIyOjMzOzExKTOzu7GxubNze3FxaXLS2tDQyNKSipPz+/Hx+
             fMTCxDw+PBwaHIyKjMzKzERGROzq7GxqbLSytCwqLNza3FRWVJyenPz6/Hx6fLy+vDw6PJSSlNTS1ExOTPTy9HRydOTi5FxeXP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
             AAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCQAzACwAAAAAHgAeAAAG/sCZcEgcLmCwRXHJFKJexFbEVSJKlE0iSjOJDVuuCOLLqaCyxknBkxFKXeNZRnbhYNGzUa
