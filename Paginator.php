@@ -184,7 +184,15 @@ class Paginator extends ContentDecorator
           else
             $template = addslashes('<div style="font-style: italic;padding: 50px 0 50px; text-align: center; font-size: 2em;">' . $this->placeholdersLabel . '</div>');
 
-          $ajaxFunc = "function ".$getName."(_pageSize,_pageNum){
+          $ajaxFunc = "
+          
+          function ajaxPagerManageError(elem, xhttp) {
+            console.log('Paginator error')
+            console.log(xhttp);
+            elem.innerHTML = '<div style=\"font-style: italic;padding: 50px 0 50px; text-align: center; font-size: 2em; color: red;text-decoration: underline;\">Error ' + xhttp.status + '</div>';
+          }
+          
+          function ".$getName."(_pageSize,_pageNum){
             var elem = document.getElementById('".$this->id_wrapper."');
 
             $(elem).parent().find('.pcrt-row-h').hide()
@@ -271,24 +279,26 @@ class Paginator extends ContentDecorator
             xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             xhttp.onreadystatechange = function() {
               if(xhttp.readyState == 4 && xhttp.status == 200) {
-                    var result = JSON.parse(xhttp.responseText);
+                var result = JSON.parse(xhttp.responseText);
 
-                    if (result.total == 0) {
+                if (result.total == 0) {
 
-                      elem.innerHTML = \"".$template."\";
-                    } else {
-                      $('#".$this->id."').pagination('updateItems', result.total);
+                  elem.innerHTML = \"".$template."\";
+                } else {
+                  $('#".$this->id."').pagination('updateItems', result.total);
 
-                      $(elem).parent().find('.pcrt-row-h').show()
-                      $('#".$this->id."').attr('style','display:block');
-                      
-                      elem.innerHTML = result.html;
-                    }
-  
-                    // Add event emit on Nextpage loaded .
-                    var event = new Event('table_loaded');
-                    window.dispatchEvent(event);
+                  $(elem).parent().find('.pcrt-row-h').show()
+                  $('#".$this->id."').attr('style','display:block');
+                  
+                  elem.innerHTML = result.html;
                 }
+
+                // Add event emit on Nextpage loaded .
+                var event = new Event('table_loaded');
+                window.dispatchEvent(event);
+              } else if(xhttp.readyState == 4 && xhttp.status != 200 && xhttp.status != 0) {
+                ajaxPagerManageError(elem, xhttp);
+              }
             }
             xhttp.send();
           }";
@@ -299,16 +309,18 @@ class Paginator extends ContentDecorator
             xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             xhttp.onreadystatechange = function() {
               if(xhttp.readyState == 4 && xhttp.status == 200) {
-                    var result = JSON.parse(xhttp.responseText);
-                    $('#".$this->id."').pagination('updateItems', result.total);
-                    var elem = document.getElementById('".$this->id_wrapper."');
-  
-                    elem.innerHTML = result.html;
-  
-                    // Add event emit on Nextpage loaded .
-                    var event = new Event('table_loaded');
-                    window.dispatchEvent(event);
-                }
+                var result = JSON.parse(xhttp.responseText);
+                $('#".$this->id."').pagination('updateItems', result.total);
+                var elem = document.getElementById('".$this->id_wrapper."');
+
+                elem.innerHTML = result.html;
+
+                // Add event emit on Nextpage loaded .
+                var event = new Event('table_loaded');
+                window.dispatchEvent(event);
+              } else if(xhttp.readyState == 4 && xhttp.status != 200 && xhttp.status != 0) {
+                ajaxPagerManageError(elem, xhttp);
+              }
             }
             xhttp.send();
           }";
