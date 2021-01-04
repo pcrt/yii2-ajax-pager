@@ -198,7 +198,7 @@ class Paginator extends ContentDecorator
             $(elem).parent().find('.pcrt-row-h').hide()
             $('#".$this->id."').attr('style','display:none !important');
 
-            elem.innerHTML = '<div style=\"text-align:center;padding: 50px 0 50px;\"><img height=\"30\" width=\"30\" src=\"" . str_replace([PHP_EOL, " "],"","data:image/gif;
+            elem.innerHTML = '<div style=\"text-align:center;padding: 50px 0 50px;\"><img height=\"30\" width=\"30\" src=\"" . str_replace([PHP_EOL, "\n", " "],"","data:image/gif;
             base64,R0lGODlhHgAeAKUAAAQCBISGhMTGxERCROTm5GRmZKyurCQmJNTW1FRSVJyanPT29HR2dLy6vDQ2NIyOjMzOzExKTOzu7GxubNze3FxaXLS2tDQyNKSipPz+/Hx+
             fMTCxDw+PBwaHIyKjMzKzERGROzq7GxqbLSytCwqLNza3FRWVJyenPz6/Hx6fLy+vDw6PJSSlNTS1ExOTPTy9HRydOTi5FxeXP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
             AAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCQAzACwAAAAAHgAeAAAG/sCZcEgcLmCwRXHJFKJexFbEVSJKlE0iSjOJDVuuCOLLqaCyxknBkxFKXeNZRnbhYNGzUa
