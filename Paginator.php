@@ -198,7 +198,7 @@ class Paginator extends ContentDecorator
             $(elem).parent().find('.pcrt-row-h').hide()
             $('#".$this->id."').attr('style','display:none !important');
 
-            elem.innerHTML = '<div style=\"text-align:center;padding: 50px 0 50px;\"><img height=\"30\" width=\"30\" src=\"" . base64_encode(file_get_contents(__DIR__ . "/assets/index.gif") . "\" />")."</div>';
+            elem.innerHTML = '<div style=\"text-align:center;padding: 50px 0 50px;\"><img height=\"30\" width=\"30\" src=\"data:image/gif;base64," . base64_encode(file_get_contents(__DIR__ . "/assets/index.gif")) . "\" /></div>';
 
             var xhttp = new XMLHttpRequest();
             xhttp.open('GET', '".$url."&pageNumber='+_pageNum, true);
