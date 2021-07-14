@@ -253,19 +253,23 @@ class Paginator extends ContentDecorator
         }
 
         $script = new JsExpression($ajaxFunc . "
+        var globalPageNumber = 1;
+
         function ".$refreshName."() {
           $('#".$this->id."').pagination('destroy');
 
           $('#".$this->id."').pagination({
             'onInit': function(){
-              ".$getName."(".$this->pageSize.",1)
+              ".$getName."(".$this->pageSize.", globalPageNumber)
             },
             'onPageClick': function(pageNumber, event){
-              ".$getName."(".$this->pageSize.",pageNumber)
+              globalPageNumber = pageNumber
+              ".$getName."(".$this->pageSize.", pageNumber)
             },
             'itemsOnPage': $this->pageSize,
             'prevText': '$this->prevText',
-            'nextText': '$this->nextText'
+            'nextText': '$this->nextText',
+            'currentPage': globalPageNumber
           });
         }
 
