@@ -255,7 +255,11 @@ class Paginator extends ContentDecorator
         $script = new JsExpression($ajaxFunc . "
         var globalPageNumber = 1;
 
-        function ".$refreshName."() {
+        function ".$refreshName."(save = false) {
+          if (!save) {
+            globalPageNumber = 1
+          }
+
           $('#".$this->id."').pagination('destroy');
 
           $('#".$this->id."').pagination({
@@ -273,8 +277,8 @@ class Paginator extends ContentDecorator
           });
         }
 
-        window.reload_table = function(){
-          ".$refreshName."()
+        window.reload_table = function(save = false){
+          ".$refreshName."(save)
         }
         $('document').ready(function(){
           ".$refreshName."()
