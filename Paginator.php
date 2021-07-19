@@ -73,6 +73,8 @@ class Paginator extends ContentDecorator
     public $placeholdersTemplate = '';
 
     public $placeholdersLabel = 'No results';
+
+    public $sessionPage = false;
         
     /**
      * @inheritdoc
@@ -253,11 +255,11 @@ class Paginator extends ContentDecorator
         }
 
         $script = new JsExpression($ajaxFunc . "
-        var globalPageNumber = 1;
+        var globalPageNumber = " . $this->getCurrentPage() . ";
 
         function ".$refreshName."(save = false) {
           if (!save) {
-            globalPageNumber = 1
+            globalPageNumber = " . $this->getCurrentPage() . "
           }
 
           $('#".$this->id."').pagination('destroy');
@@ -320,5 +322,14 @@ class Paginator extends ContentDecorator
         } else {
             PaginatorAsset::register($view);
         }
+    }
+
+    protected function getCurrentPage() {
+      if ($this->sessionPage) {
+        if (isset($_SESSION['ajax-pager-page']) && isset($_SESSION['ajax-pager-page'][$this->sessionPage])) {
+          return $_SESSION['ajax-pager-page'][$this->sessionPage];
+        }
+      }
+      return 1;
     }
 }
