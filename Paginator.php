@@ -258,10 +258,6 @@ class Paginator extends ContentDecorator
         var globalPageNumber = " . $this->getCurrentPage() . ";
 
         function ".$refreshName."(save = false) {
-          if (!save) {
-            globalPageNumber = " . $this->getCurrentPage() . "
-          }
-
           $('#".$this->id."').pagination('destroy');
 
           $('#".$this->id."').pagination({
@@ -279,7 +275,11 @@ class Paginator extends ContentDecorator
           });
         }
 
-        window.reload_table = function(save = false){
+        window.reload_table = function(save = false, reset = false){
+          if (reset) {
+            globalPageNumber = 1
+          }
+          
           ".$refreshName."(save)
         }
         $('document').ready(function(){
